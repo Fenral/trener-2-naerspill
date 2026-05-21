@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="gate.js"></script>
+<title>Trener 2 Nærspill</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1a4731">
+<link rel="stylesheet" href="theme.css">
+<style>
+  /* ──────────────────────────────────────────────
+     UNIFIED DESIGN SYSTEM
+     ▸ Green = interactive accent only (active state, bar-fill, brand moments)
+     ▸ Decorative text = ink or muted, never green
+     ▸ One hover transition curve for the whole page
+     ────────────────────────────────────────────── */
+
+  :root {
+    --hover-curve: cubic-bezier(0.32, 0.72, 0, 1);
+    --hover-shadow: 0 1px 2px rgba(15,46,31,0.04), 0 12px 28px rgba(15,46,31,0.08);
+    --hover-border: rgba(82,183,136,0.30);
+    --neutral-pill-bg: rgba(15,46,31,0.05);
+    --neutral-pill-bg-hover: rgba(15,46,31,0.08);
+  }
+
+  /* ────── Wide wrapper ────── */
+  .wrap.slideshow {
+    max-width: 1180px;
+    padding: 0 28px 120px;
+  }
+
+  /* ────── Section base ────── */
+  section.slide { margin-top: 80px; }
+  section.slide .eyebrow-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--green-700);
+    background: rgba(82,183,136,0.10);
+    padding: 6px 12px; border-radius: 999px;
+    margin-bottom: 20px;
+  }
+  section.slide h2 {
+    font-size: clamp(28px, 3.4vw, 40px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  /* accent is a no-op color-wise — same ink. emphasis comes from heading scale alone */
+  section.slide h2 .accent { color: inherit; }
+  section.slide .lead-p {
+    font-size: 16.5px; color: var(--muted);
+    max-width: 62ch;
+    margin-bottom: 28px;
+    line-height: 1.55;
+  }
+
+  /* ────── Universal hover (one mønster for all surfaces) ────── */
+  .point-card,
+  .gb-card,
+  .ovelser-list li,
+  .vid-frame,
+  .energi-card {
+    transition: transform 320ms var(--hover-curve),
+                box-shadow 320ms var(--hover-curve),
+                border-color 320ms var(--hover-curve);
+  }
+  .point-card:hover,
+  .gb-card:hover,
+  .ovelser-list li:hover,
+  .vid-frame:hover,
+  .energi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+    border-color: var(--hover-border);
+  }
+  .point-card:active,
+  .gb-card:active,
+  .ovelser-list li:active,
+  .vid-frame:active {
+    transform: translateY(0);
+    transition-duration: 120ms;
+  }
+  /* tone-green cards keep their dark gradient hover */
+  .gb-card.tone-green:hover { border-color: transparent; }
+
+  /* ────── Fundament: split layout ────── */
+  .fundament-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .fundament-col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .point-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+  }
+  .point-card.full { grid-column: 1 / -1; }
+  .point-card .point-head {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .point-card ul.checklist {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: 6px;
+  }
+  .point-card ul.checklist li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: 10px;
+    align-items: start;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+    padding: 4px 0;
+  }
+  .point-card ul.checklist li > span:first-child {
+    display: block;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    background: var(--muted);
+    margin-top: 7px;
+    opacity: 0.55;
+  }
+  em.eng {
+    font-style: normal;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    white-space: normal;
+    display: inline;
+    line-height: inherit;
+  }
+
+  /* sticky reference column */
+  .ref-side {
+    position: sticky; top: 24px;
+    display: grid; gap: 14px;
+  }
+  .energi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .energi-card .head {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .energi-card img {
+    width: 100%; border-radius: 8px; display: block;
+  }
+  .energi-card .desc {
+    font-size: 12px; color: var(--muted);
+    margin-top: 8px; line-height: 1.5;
+  }
+
+  /* ──────────────────────────────────────────────
+     Reusable video frame
+     ▸ vid-stage holds video + canvas + toolbar (toolbar at bottom, auto-hide)
+     ▸ Drawing tools work in normal AND pseudo-fullscreen mode
+     ▸ Fullscreen: object-fit: contain so nothing is cropped
+     ────────────────────────────────────────────── */
+  .vid-frame {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 8px;
+    display: flex; flex-direction: column;
+  }
+  .vid-stage {
+    position: relative;
+    background: #050505;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 9 / 16;
+  }
+  .vid-frame.compact .vid-stage {
+    aspect-ratio: 9 / 16;
+    max-height: 56vh;
+    margin: 0 auto;
+    width: auto;
+  }
+  .vid-stage video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+  }
+  .vid-stage canvas.vid-overlay {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    touch-action: none;
+  }
+  .vid-frame.drawing .vid-stage canvas.vid-overlay {
+    pointer-events: auto;
+    cursor: crosshair;
+  }
+  .vid-frame.drawing .vid-stage video { pointer-events: none; }
+  .vid-frame.drawing .vid-stage::after {
+    content: "TEGN";
+    position: absolute;
+    top: 10px; left: 10px;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em;
+    background: rgba(220,38,38,0.85);
+    color: #fff;
+    padding: 3px 7px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* toolbar — always visible at bottom of stage with translucent gradient */
+  .vid-bar {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    display: flex; flex-wrap: wrap; gap: 4px;
+    align-items: center;
+    padding: 10px 10px 10px;
+    background: linear-gradient(to top, rgba(5,5,5,0.78) 0%, rgba(5,5,5,0.55) 50%, rgba(5,5,5,0) 100%);
+    z-index: 4;
+    opacity: 0;
+    transition: opacity 240ms var(--hover-curve);
+  }
+  .vid-frame:hover .vid-bar,
+  .vid-frame:focus-within .vid-bar,
+  .vid-frame.drawing .vid-bar,
+  .vid-frame.fullscreen .vid-bar,
+  .vid-frame.touch-active .vid-bar {
+    opacity: 1;
+  }
+
+  .vb-btn {
+    border: 1px solid rgba(255,255,255,0.22);
+    background: rgba(15,15,15,0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.92);
+    padding: 0 8px;
+    height: 26px; min-width: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 180ms var(--hover-curve), border-color 180ms var(--hover-curve), transform 120ms;
+    font-family: inherit;
+    display: inline-flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .vb-btn:hover {
+    background: rgba(35,35,35,0.78);
+    border-color: rgba(255,255,255,0.4);
+  }
+  .vb-btn:active { transform: scale(0.96); }
+  .vb-btn.active {
+    background: var(--green-500);
+    border-color: var(--green-500);
+    color: #0f2e1f;
+  }
+  .vb-btn .ico { font-size: 13px; line-height: 1; }
+  .vb-btn .ico-svg { width: 11px; height: 11px; }
+  .vb-speed { font-family: var(--mono); }
+  .vb-divider {
+    width: 1px; height: 14px;
+    background: rgba(255,255,255,0.22);
+    margin: 0 3px;
+  }
+  .vb-color {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid rgba(255,255,255,0.22);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 200ms var(--hover-curve), border-color 200ms var(--hover-curve);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .vb-color:hover { transform: scale(1.1); }
+  .vb-color.active { border-color: #ffffff; }
+  .vb-spacer { flex: 1; }
+
+  /* progress / seek bar — full-width row above buttons */
+  .vb-progress {
+    flex-basis: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.22);
+    border-radius: 999px;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 6px;
+    transition: height 200ms var(--hover-curve);
+  }
+  .vb-progress:hover,
+  .vb-progress.scrubbing {
+    height: 7px;
+  }
+  .vb-progress-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--green-500);
+    border-radius: 999px;
+    width: 0%;
+    pointer-events: none;
+    transition: width 80ms linear;
+  }
+  .vb-progress-thumb {
+    position: absolute;
+    top: 50%;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--green-500);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 200ms var(--hover-curve);
+    pointer-events: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .vb-progress:hover .vb-progress-thumb,
+  .vb-progress.scrubbing .vb-progress-thumb {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .vid-frame .vid-caption {
+    font-size: 12.5px;
+    color: var(--muted);
+    padding: 8px 6px 2px;
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px;
+  }
+  .vid-frame .vid-caption .name {
+    font-weight: 700; color: var(--ink);
+    letter-spacing: -0.01em;
+    font-size: 13.5px;
+  }
+  .vid-frame .vid-caption .desc {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 2px;
+    line-height: 1.45;
+  }
+  .vid-frame .vid-caption .tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  /* pseudo-fullscreen mode: drawing + toolbar always available */
+  .vid-frame.fullscreen {
+    position: fixed; inset: 0;
+    z-index: 9999;
+    background: #000;
+    border-radius: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    transform: none !important;
+    transition: none;
+  }
+  .vid-frame.fullscreen .vid-stage {
+    flex: 1;
+    aspect-ratio: auto;
+    max-height: none;
+    width: 100%; height: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+  .vid-frame.fullscreen .vid-stage video {
+    object-fit: contain;
+    background: #000;
+  }
+  .vid-frame.fullscreen .vid-caption { display: none; }
+  .vid-frame.fullscreen .vid-bar {
+    padding: 14px 18px 18px;
+    background: linear-gradient(to top, rgba(5,5,5,0.85) 0%, rgba(5,5,5,0.65) 50%, rgba(5,5,5,0) 100%);
+  }
+
+  /* ────── Grunnslag bento ────── */
+  .grunnslag-bento {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .gb-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px;
+  }
+  .gb-card .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .gb-card h4 {
+    font-size: 16px; line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+  .gb-card ul {
+    list-style: none; padding: 0; margin: 0;
+    font-size: 13.5px; color: var(--muted);
+    line-height: 1.6;
+  }
+  .gb-card ul li { padding: 4px 0; }
+  .gb-card.span-2 { grid-column: span 2; }
+  .gb-card.span-3 { grid-column: span 3; }
+  .gb-card.tone-green {
+    background: linear-gradient(160deg, var(--green-800), var(--green-700));
+    color: #f7f5ef; border: 0;
+  }
+  .gb-card.tone-green h4 { color: #fff; }
+  .gb-card.tone-green ul { color: rgba(255,255,255,0.78); }
+  .gb-card.tone-green .num { color: rgba(255,255,255,0.55); }
+  .gb-card.tone-sand {
+    background: var(--sand-100);
+    border-color: rgba(138,109,46,0.18);
+  }
+  .gb-card.tone-sand .num { color: var(--sand-700); }
+
+  /* ────── Shot Explorer ────── */
+  .shot-explorer {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 8px;
+    box-shadow: var(--shadow);
+    margin-top: 18px;
+  }
+  .shot-explorer-inner {
+    background: linear-gradient(180deg, #fbfaf5 0%, #f7f5ef 100%);
+    border-radius: 22px;
+    padding: 28px 28px 32px;
+    border: 1px solid rgba(15,46,31,0.04);
+  }
+  .shot-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 6px;
+    background: rgba(15,46,31,0.05);
+    border-radius: 999px;
+    width: fit-content;
+    margin-bottom: 24px;
+  }
+  .shot-tab {
+    border: 0; cursor: pointer;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13.5px; font-weight: 600;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+    transition: color 320ms var(--hover-curve),
+                background 320ms var(--hover-curve),
+                transform 120ms;
+    white-space: nowrap;
+  }
+  .shot-tab:hover { color: var(--ink); }
+  .shot-tab.active {
+    background: var(--green-800);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(15,46,31,0.18),
+                inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .shot-tab:active { transform: scale(0.98); }
+
+  .shot-body {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .shot-details h3 {
+    font-size: 22px; line-height: 1.18;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .shot-details .subtitle {
+    font-size: 11.5px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.16em;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .shot-details ul {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: 8px;
+  }
+  .shot-details ul li {
+    font-size: 13.5px; color: var(--ink);
+    padding: 8px 0 8px 22px;
+    border-bottom: 1px dashed rgba(15,46,31,0.10);
+    position: relative;
+    line-height: 1.55;
+  }
+  .shot-details ul li:last-child { border-bottom: 0; }
+  .shot-details ul li::before {
+    content: "›";
+    position: absolute;
+    left: 4px; top: 8px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .shot-details ul li strong {
+    color: var(--ink);
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  .shot-metrics {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .shot-metric { margin-bottom: 16px; }
+  .shot-metric:last-child { margin-bottom: 0; }
+  .shot-metric .top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .shot-metric .label {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.16em;
+    font-weight: 700;
+  }
+  .shot-metric .value {
+    font-family: var(--mono);
+    font-size: 12.5px; color: var(--ink);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .shot-metric .track {
+    position: relative;
+    height: 8px;
+    background: rgba(15,46,31,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .shot-metric .fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 0%;
+    background: linear-gradient(90deg, var(--green-700), var(--green-500));
+    border-radius: 999px;
+    transition: width 900ms var(--hover-curve);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+
+  .shot-summary {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 18px;
+  }
+  .shot-summary .chip {
+    font-size: 11.5px; font-weight: 600;
+    background: var(--neutral-pill-bg);
+    color: var(--ink);
+    padding: 6px 11px; border-radius: 999px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ────── Spin profile explorer ────── */
+  .spin-explorer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 4px;
+  }
+  .spin-data-img {
+    width: 100%;
+    border-radius: 14px;
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    background: #fff;
+    transition: opacity 400ms var(--hover-curve);
+  }
+  .spin-data-img.hidden { display: none; }
+  .spin-data-caption {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.16em;
+    text-align: center;
+    margin-top: 6px;
+    font-weight: 700;
+  }
+
+  /* ────── Tour gallery ────── */
+  .tour-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  /* ────── Øvelser ────── */
+  .ovelser-list {
+    counter-reset: step;
+    list-style: none;
+    padding: 0; margin: 18px 0 0;
+    display: grid; gap: 10px;
+  }
+  .ovelser-list li {
+    counter-increment: step;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px 18px 64px;
+    position: relative;
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .ovelser-list li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 18px; top: 50%; transform: translateY(-50%);
+    font-family: var(--mono);
+    font-size: 12.5px; font-weight: 700;
+    color: var(--muted);
+    background: var(--neutral-pill-bg);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: grid; place-items: center;
+  }
+  .ovelser-list li strong {
+    color: var(--ink);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  /* ────── Reveal animation ────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(6px);
+    transition: opacity 900ms var(--hover-curve),
+                transform 900ms var(--hover-curve),
+                filter 900ms var(--hover-curve);
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  /* Section nav */
+  .section-nav {
+    position: fixed;
+    top: 50%; transform: translateY(-50%);
+    right: 18px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 30;
+    padding: 12px 8px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+  .section-nav a {
+    width: 8px; height: 8px;
+    border-radius: 999px;
+    background: rgba(15,46,31,0.18);
+    display: block;
+    transition: all 320ms var(--hover-curve);
+    text-indent: -9999px;
+    overflow: hidden;
+  }
+  .section-nav a.active {
+    background: var(--green-700);
+    height: 22px;
+  }
+  .section-nav a:hover { background: var(--green-500); }
+
+  /* ────── Mobile collapse ────── */
+  @media (max-width: 880px) {
+    .wrap.slideshow { padding: 0 18px 80px; }
+    section.slide { margin-top: 56px; }
+    .fundament-grid,
+    .shot-body,
+    .spin-explorer-grid,
+    .fundament-col-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .point-card.full { grid-column: 1; }
+    .ref-side { position: static; }
+    .vid-frame.compact .vid-stage { max-height: 70vh; }
+    .grunnslag-bento { grid-template-columns: repeat(2, 1fr); }
+    .gb-card.span-2, .gb-card.span-3 { grid-column: span 2; }
+    .section-nav { display: none; }
+    .shot-tabs { width: 100%; justify-content: flex-start; overflow-x: auto; }
+    .vid-bar { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="ngf-logo.png" alt="Norges Golfforbund">
+  <div class="org">Norges Golfforbund<small>Trenerutdanning</small></div>
+</div>
+
+<div class="wrap slideshow">
+
+  <header class="hero reveal">
+    <div class="eyebrow"><span class="dot"></span> Trener 2 · Praksis · Shortgame</div>
+    <h1>Nærspill</h1>
+    <p class="lead">Setup, backsving, shot shape og avansert <em>spin loft</em>. Klikk på slagtypene for å se hvordan tallene endrer seg. Klikk på filmene for fullskjerm uten crop, eller tegn rett på dem.</p>
+  </header>
+
+  <!-- ════════════════════════════════════════════
+       01 — Fundament
+       ════════════════════════════════════════════ -->
+  <section class="slide reveal" id="fundament">
+    <span class="eyebrow-tag"><span style="width:6px;height:6px;border-radius:99px;background:currentColor;"></span> 01 · Fundament</span>
+    <h2>Setup, backsving og <span class="accent">gjennomsving</span></h2>
+
+    <div class="fundament-grid">
+      <div>
+        <div class="fundament-col-grid">
+
+          <div class="point-card">
+            <div class="point-head">Setup — chip basic</div>
+            <ul class="checklist">
+              <li><span></span><div>55–65 % vekt fram</div></li>
+              <li><span></span><div>Smal <em class="eng">stance</em></div></li>
+              <li><span></span><div>Svingsenter over ballen</div></li>
+              <li><span></span><div>Armer henger naturlig (kan være litt bøyde)</div></li>
+              <li><span></span><div>Rygg tiltet mot target — <em class="eng">T-spine</em></div></li>
+              <li><span></span><div><em class="eng">Butterfly grip</em></div></li>
+            </ul>
+          </div>
+
+          <div class="point-card">
+            <div class="point-head">Køllehodet og handposisjon</div>
+            <ul class="checklist">
+              <li><span></span><div>Nøytralt køllehodet</div></li>
+              <li><span></span><div>Venstre albue peker ned mot ballen</div></li>
+              <li><span></span><div>Skaft lett fremover ved standardslag</div></li>
+              <li><span></span><div>Ballen like bak midten</div></li>
+              <li><span></span><div>Tomlene ned (<em class="eng">ulnar</em>)</div></li>
+              <li><span></span><div><em class="eng">Toe down</em></div></li>
+            </ul>
+          </div>
+
+          <div class="point-card">
+            <div class="point-head">Backsving — prinsipper</div>
+            <ul class="checklist">
+              <li><span></span><div>Minimal håndleddsbevegelse</div></li>
+              <li><span></span><div>Overkroppsrotasjon styrer bevegelsen</div></li>
+              <li><span></span><div>Tempo og lengde kommer an på slagets lengde</div></li>
+            </ul>
+          </div>
+
+          <div class="point-card">
+            <div class="point-head">Backsving — teknikkdetaljer</div>
+            <ul class="checklist">
+              <li><span></span><div>Lang eller kort <em class="eng">handpath</em></div></li>
+              <li><span></span><div><em class="eng">Takeaway</em> styrt av overkroppen</div></li>
+              <li><span></span><div>La <em class="eng">handpath</em> / <em class="eng">center of mass</em> styre kølleplan</div></li>
+              <li><span></span><div>Køllehodet i sirkelen</div></li>
+              <li><span></span><div>Vekt flyttes til front bein</div></li>
+            </ul>
+          </div>
+
+          <div class="point-card full">
+            <div class="point-head">Gjennomsving</div>
+            <ul class="checklist">
+              <li><span></span><div>Vekt på fremre fot</div></li>
+              <li><span></span><div>Hender foran fremre lomme</div></li>
+              <li><span></span><div>Fortsatt myke armer (køllen føles tung)</div></li>
+              <li><span></span><div>Slipp løs køllen</div></li>
+              <li><span></span><div>Desto lengre og høyere du skal slå, desto tidligere må du slippe køllen</div></li>
+              <li><span></span><div>Energilinje: en siktepinne fra høyre tå til venstre hæl (diagonal)</div></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <aside class="ref-side">
+        <div class="vid-frame compact" data-vid-frame>
+          <div class="vid-stage">
+            <video src="videos/media6.mp4" autoplay muted loop playsinline></video>
+            <canvas class="vid-overlay"></canvas>
+            <div class="vid-bar">
+              <button class="vb-btn vb-play" data-action="toggle-play" title="Spill / pause">
+                <svg viewBox="0 0 24 24" class="ico-svg ico-play" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                <svg viewBox="0 0 24 24" class="ico-svg ico-pause" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+              </button>
+              <button class="vb-btn vb-speed" data-speed="0.25">0.25×</button>
+              <button class="vb-btn vb-speed" data-speed="0.5">0.5×</button>
+              <button class="vb-btn vb-speed active" data-speed="1">1×</button>
+              <span class="vb-divider"></span>
+              <button class="vb-btn vb-draw" data-action="toggle-draw" title="Tegn på film"><span class="ico">✎</span></button>
+              <button class="vb-btn vb-tool active" data-tool="free" title="Frihånd"><span class="ico">∿</span></button>
+              <button class="vb-btn vb-tool" data-tool="line" title="Rett linje"><span class="ico">╱</span></button>
+              <span class="vb-divider"></span>
+              <button class="vb-color active" data-color="#ef4444" style="background:#ef4444" title="Rød"></button>
+              <button class="vb-color" data-color="#facc15" style="background:#facc15" title="Gul"></button>
+              <button class="vb-color" data-color="#3b82f6" style="background:#3b82f6" title="Blå"></button>
+              <button class="vb-color" data-color="#ffffff" style="background:#ffffff" title="Hvit"></button>
+              <span class="vb-divider"></span>
+              <button class="vb-btn vb-undo" data-action="undo" title="Angre"><span class="ico">↶</span></button>
+              <button class="vb-btn vb-clear" data-action="clear" title="Tøm"><span class="ico">⌫</span></button>
+              <span class="vb-spacer"></span>
+              <button class="vb-btn vb-full" data-action="fullscreen" title="Fullskjerm uten crop"><span class="ico">⛶</span></button>
+            </div>
+          </div>
+          <div class="vid-caption">
+            <div>
+              <div class="name">Standard chip</div>
+              <div class="desc">Lite spinn · referanse</div>
+            </div>
+            <span class="tag">Reference</span>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       02 — Grunnslag
+       ════════════════════════════════════════════ -->
+  <section class="slide reveal" id="grunnslag">
+    <span class="eyebrow-tag"><span style="width:6px;height:6px;border-radius:99px;background:currentColor;"></span> 02 · Grunnslag</span>
+    <h2>Finn ditt <span class="accent">grunnslag</span></h2>
+    <p class="lead-p">Et lite kort slag som ruller ut. Det blir referansen for all videre justering. Spør deg selv: hvordan fungerer grunnslaget mitt her, og hva trenger jeg om det ikke fungerer?</p>
+
+    <div class="grunnslag-bento">
+      <div class="gb-card span-3">
+        <div class="num">01 · KJERNE</div>
+        <h4>Oppsett og grep</h4>
+        <ul>
+          <li>· <em class="eng">T-spine</em> lett fremover</li>
+          <li>· <em class="eng">Lead hand</em> lav</li>
+          <li>· Tommel ned (<em class="eng">ulnar</em>-følelse)</li>
+          <li>· Start med J6, grep som med putter</li>
+        </ul>
+      </div>
+      <div class="gb-card span-3">
+        <div class="num">02 · DYNAMIKK</div>
+        <h4>Bevegelse og balanse</h4>
+        <ul>
+          <li>· Jobb med to føtter: én bak, én frem</li>
+          <li>· Legg ut balanse</li>
+          <li>· Gå opp i loft til du finner en kølle som gir kontroll på tom chip</li>
+        </ul>
+      </div>
+      <div class="gb-card span-2">
+        <div class="num">03 · FØLELSE</div>
+        <h4>Hender</h4>
+        <ul>
+          <li>· Plasser en hanske under venstre arm (P4)</li>
+          <li>· Noter trykket mellom høyre pekefinger og grepet</li>
+        </ul>
+      </div>
+      <div class="gb-card span-2">
+        <div class="num">04 · BEVEGELSE</div>
+        <h4>Kølle og kropp</h4>
+        <ul>
+          <li>· Kølla beveger seg diagonalt mellom bena</li>
+          <li>· Linje fra høyre tå til venstre hæl</li>
+          <li>· Beltespennet følger samme linje</li>
+        </ul>
+      </div>
+      <div class="gb-card span-2">
+        <div class="num">05 · RELASJON</div>
+        <h4>Hånd og kølle</h4>
+        <ul>
+          <li>· Når skaftet reises skapes en rund følelse i venstre hånd</li>
+          <li>· (<em class="eng">ulnar deviation</em>)</li>
+          <li>· Håndsporet og køllehodet på samme linje</li>
+        </ul>
+      </div>
+      <div class="gb-card span-3">
+        <div class="num">06 · SPØRSMÅL</div>
+        <h4>Hva trenger jeg her?</h4>
+        <ul>
+          <li>· Mer eller mindre fart?</li>
+          <li>· Høyere eller lavere slag?</li>
+          <li>· Mer eller mindre spinn?</li>
+        </ul>
+      </div>
+      <div class="gb-card span-3">
+        <div class="num">07 · ITERASJON</div>
+        <h4>Tilpasning og repetisjon</h4>
+        <ul>
+          <li>· Ulike slag til ulike situasjoner</li>
+          <li>· Rotasjon bak, deretter rotert frem igjen</li>
+          <li>· Tilbake til start og fortsett frem</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       03 — Standardslag explorer
+       ════════════════════════════════════════════ -->
+  <section class="slide reveal" id="standardslag">
+    <span class="eyebrow-tag"><span style="width:6px;height:6px;border-radius:99px;background:currentColor;"></span> 03 · Standardslag</span>
+    <h2>Slagtype-utforsker, <span class="accent">standardslag</span></h2>
+    <p class="lead-p">Klikk en slagtype og se hvordan launch, spinn og release endrer seg. Disse fire er byggeklossene før du går til spin-profilene.</p>
+
+    <div class="shot-explorer">
+      <div class="shot-explorer-inner">
+        <div class="shot-tabs" role="tablist" data-target="standard">
+          <button class="shot-tab active" data-shot="mid">Mid traj</button>
+          <button class="shot-tab" data-shot="high">Høy traj</button>
+          <button class="shot-tab" data-shot="fade">Fade</button>
+          <button class="shot-tab" data-shot="draw">Draw</button>
+        </div>
+
+        <div class="shot-body">
+          <div class="shot-details" data-pane="standard-details">
+            <h3 data-field="title">Mid traj, standardslaget</h3>
+            <div class="subtitle" data-field="subtitle">Ikon-logikk</div>
+            <ul data-field="bullets">
+              <li>Ball nøytral, mid traj</li>
+              <li>Smal <em class="eng">stance</em>, kontroll</li>
+              <li>Nøytrale hender, mid spinn</li>
+              <li>Lite rotasjon, kontrollert <em class="eng">release</em></li>
+            </ul>
+            <div class="shot-summary" data-field="summary">
+              <span class="chip">Mid traj</span>
+              <span class="chip">Mid/høy spinn</span>
+              <span class="chip">Moderat release</span>
+            </div>
+          </div>
+          <div class="shot-metrics" data-pane="standard-metrics">
+            <div class="shot-metric" data-metric="launch">
+              <div class="top"><span class="label">Launch · trajectory</span><span class="value">Mid · 55%</span></div>
+              <div class="track"><div class="fill" style="width:55%;"></div></div>
+            </div>
+            <div class="shot-metric" data-metric="spin">
+              <div class="top"><span class="label">Spin RPM</span><span class="value">Mid/høy · 70%</span></div>
+              <div class="track"><div class="fill" style="width:70%;"></div></div>
+            </div>
+            <div class="shot-metric" data-metric="release">
+              <div class="top"><span class="label">Release · roll</span><span class="value">Moderat · 55%</span></div>
+              <div class="track"><div class="fill" style="width:55%;"></div></div>
+            </div>
+            <div class="shot-metric" data-metric="bite">
+              <div class="top"><span class="label">Bite · stop</span><span class="value">Moderat · 50%</span></div>
+              <div class="track"><div class="fill" style="width:50%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       05 — Shot Shape
+       ════════════════════════════════════════════ -->
+  <section class="slide reveal" id="shotshape">
+    <span class="eyebrow-tag"><span style="width:6px;height:6px;border-radius:99px;background:currentColor;"></span> 05 · Shot shape</span>
+    <h2>Fade og <span class="accent">Draw</span></h2>
+    <p class="lead-p">Bane, face og spinn. To ytterpunkter for shot shape i shortgame.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px;">
+      <div class="gb-card" style="padding:28px;">
+        <div class="num">FADE</div>
+        <h4 style="font-size:22px;margin-bottom:14px;">Mye spinn, fast stop</h4>
+        <ul style="font-size:14.5px;line-height:1.65;">
+          <li>· Ut-til-inn bane</li>
+          <li>· Lett åpent face</li>
+          <li>· Skaper <em class="eng">cut-spinn</em> og rask stopp</li>
+        </ul>
+      </div>
+      <div class="gb-card" style="padding:28px;">
+        <div class="num">DRAW</div>
+        <h4 style="font-size:22px;margin-bottom:14px;">Lite spinn, mer rull</h4>
+        <ul style="font-size:14.5px;line-height:1.65;">
+          <li>· Inn-til-ut bane</li>
+          <li>· Face nøytralt eller svakt stengt</li>
+          <li>· For mer rull og lavere spinn</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       06 — Tour Pros
+       ════════════════════════════════════════════ -->
+  <section class="slide reveal" id="tourpros">
+    <span class="eyebrow-tag"><span style="width:6px;height:6px;border-radius:99px;background:currentColor;"></span> 06 · Team Norway</span>
+    <h2>Tour-pro <span class="accent">eksempler</span></h2>
+    <p class="lead-p">Klikk på filmen for fullskjerm uten crop. Tegn rett på den om du vil markere en linje, vinkel eller posisjon.</p>
+
+    <div class="tour-grid">
+
+      <div class="vid-frame" data-vid-frame>
+        <div class="vid-stage">
+          <video src="videos/media5.mp4" autoplay muted loop playsinline></video>
+          <canvas class="vid-overlay"></canvas>
+          <div class="vid-bar">
+            <button class="vb-btn vb-play" data-action="toggle-play" title="Spill / pause">
+              <svg viewBox="0 0 24 24" class="ico-svg ico-play" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24" class="ico-svg ico-pause" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+            </button>
+            <button class="vb-btn vb-speed" data-speed="0.25">0.25×</button>
+            <button class="vb-btn vb-speed" data-speed="0.5">0.5×</button>
+            <button class="vb-btn vb-speed active" data-speed="1">1×</button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-draw" data-action="toggle-draw"><span class="ico">✎</span></button>
+            <button class="vb-btn vb-tool active" data-tool="free"><span class="ico">∿</span></button>
+            <button class="vb-btn vb-tool" data-tool="line"><span class="ico">╱</span></button>
+            <span class="vb-divider"></span>
+            <button class="vb-color active" data-color="#ef4444" style="background:#ef4444"></button>
+            <button class="vb-color" data-color="#facc15" style="background:#facc15"></button>
+            <button class="vb-color" data-color="#3b82f6" style="background:#3b82f6"></button>
+            <button class="vb-color" data-color="#ffffff" style="background:#ffffff"></button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-undo" data-action="undo"><span class="ico">↶</span></button>
+            <button class="vb-btn vb-clear" data-action="clear"><span class="ico">⌫</span></button>
+            <span class="vb-spacer"></span>
+            <button class="vb-btn vb-full" data-action="fullscreen"><span class="ico">⛶</span></button>
+          </div>
+        </div>
+        <div class="vid-caption">
+          <div>
+            <div class="name">Peter Hanson</div>
+            <div class="desc">Enkel chip som ruller ut fra tajt læge.</div>
+          </div>
+          <span class="tag">Tight lie</span>
+        </div>
+      </div>
+
+      <div class="vid-frame" data-vid-frame>
+        <div class="vid-stage">
+          <video src="videos/media6.mp4" autoplay muted loop playsinline></video>
+          <canvas class="vid-overlay"></canvas>
+          <div class="vid-bar">
+            <button class="vb-btn vb-play" data-action="toggle-play">
+              <svg viewBox="0 0 24 24" class="ico-svg ico-play" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24" class="ico-svg ico-pause" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+            </button>
+            <button class="vb-btn vb-speed" data-speed="0.25">0.25×</button>
+            <button class="vb-btn vb-speed" data-speed="0.5">0.5×</button>
+            <button class="vb-btn vb-speed active" data-speed="1">1×</button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-draw" data-action="toggle-draw"><span class="ico">✎</span></button>
+            <button class="vb-btn vb-tool active" data-tool="free"><span class="ico">∿</span></button>
+            <button class="vb-btn vb-tool" data-tool="line"><span class="ico">╱</span></button>
+            <span class="vb-divider"></span>
+            <button class="vb-color active" data-color="#ef4444" style="background:#ef4444"></button>
+            <button class="vb-color" data-color="#facc15" style="background:#facc15"></button>
+            <button class="vb-color" data-color="#3b82f6" style="background:#3b82f6"></button>
+            <button class="vb-color" data-color="#ffffff" style="background:#ffffff"></button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-undo" data-action="undo"><span class="ico">↶</span></button>
+            <button class="vb-btn vb-clear" data-action="clear"><span class="ico">⌫</span></button>
+            <span class="vb-spacer"></span>
+            <button class="vb-btn vb-full" data-action="fullscreen"><span class="ico">⛶</span></button>
+          </div>
+        </div>
+        <div class="vid-caption">
+          <div>
+            <div class="name">Team Norway</div>
+            <div class="desc">Vanlig standard chip med lite spinn.</div>
+          </div>
+          <span class="tag">Standard chip</span>
+        </div>
+      </div>
+
+      <div class="vid-frame" data-vid-frame>
+        <div class="vid-stage">
+          <video src="videos/media7.mp4" autoplay muted loop playsinline></video>
+          <canvas class="vid-overlay"></canvas>
+          <div class="vid-bar">
+            <button class="vb-btn vb-play" data-action="toggle-play">
+              <svg viewBox="0 0 24 24" class="ico-svg ico-play" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24" class="ico-svg ico-pause" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+            </button>
+            <button class="vb-btn vb-speed" data-speed="0.25">0.25×</button>
+            <button class="vb-btn vb-speed" data-speed="0.5">0.5×</button>
+            <button class="vb-btn vb-speed active" data-speed="1">1×</button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-draw" data-action="toggle-draw"><span class="ico">✎</span></button>
+            <button class="vb-btn vb-tool active" data-tool="free"><span class="ico">∿</span></button>
+            <button class="vb-btn vb-tool" data-tool="line"><span class="ico">╱</span></button>
+            <span class="vb-divider"></span>
+            <button class="vb-color active" data-color="#ef4444" style="background:#ef4444"></button>
+            <button class="vb-color" data-color="#facc15" style="background:#facc15"></button>
+            <button class="vb-color" data-color="#3b82f6" style="background:#3b82f6"></button>
+            <button class="vb-color" data-color="#ffffff" style="background:#ffffff"></button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-undo" data-action="undo"><span class="ico">↶</span></button>
+            <button class="vb-btn vb-clear" data-action="clear"><span class="ico">⌫</span></button>
+            <span class="vb-spacer"></span>
+            <button class="vb-btn vb-full" data-action="fullscreen"><span class="ico">⛶</span></button>
+          </div>
+        </div>
+        <div class="vid-caption">
+          <div>
+            <div class="name">Joakim Lagergren</div>
+            <div class="desc">Høyt slag med mindre spinn.</div>
+          </div>
+          <span class="tag">High traj · Low spin</span>
+        </div>
+      </div>
+
+      <div class="vid-frame" data-vid-frame>
+        <div class="vid-stage">
+          <video src="videos/media8.mp4" autoplay muted loop playsinline></video>
+          <canvas class="vid-overlay"></canvas>
+          <div class="vid-bar">
+            <button class="vb-btn vb-play" data-action="toggle-play">
+              <svg viewBox="0 0 24 24" class="ico-svg ico-play" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24" class="ico-svg ico-pause" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+            </button>
+            <button class="vb-btn vb-speed" data-speed="0.25">0.25×</button>
+            <button class="vb-btn vb-speed" data-speed="0.5">0.5×</button>
+            <button class="vb-btn vb-speed active" data-speed="1">1×</button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-draw" data-action="toggle-draw"><span class="ico">✎</span></button>
+            <button class="vb-btn vb-tool active" data-tool="free"><span class="ico">∿</span></button>
+            <button class="vb-btn vb-tool" data-tool="line"><span class="ico">╱</span></button>
+            <span class="vb-divider"></span>
+            <button class="vb-color active" data-color="#ef4444" style="background:#ef4444"></button>
+            <button class="vb-color" data-color="#facc15" style="background:#facc15"></button>
+            <button class="vb-color" data-color="#3b82f6" style="background:#3b82f6"></button>
+            <button class="vb-color" data-color="#ffffff" style="background:#ffffff"></button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-undo" data-action="undo"><span class="ico">↶</span></button>
+            <button class="vb-btn vb-clear" data-action="clear"><span class="ico">⌫</span></button>
+            <span class="vb-spacer"></span>
+            <button class="vb-btn vb-full" data-action="fullscreen"><span class="ico">⛶</span></button>
+          </div>
+        </div>
+        <div class="vid-caption">
+          <div>
+            <div class="name">Michael Mjaaseth</div>
+            <div class="desc">Standard chip med mye loft. Check og releaser ut. Forberedelse til VM Singapore.</div>
+          </div>
+          <span class="tag">High loft · Check &amp; release</span>
+        </div>
+      </div>
+
+      <div class="vid-frame" data-vid-frame>
+        <div class="vid-stage">
+          <video src="videos/media9.mp4" autoplay muted loop playsinline></video>
+          <canvas class="vid-overlay"></canvas>
+          <div class="vid-bar">
+            <button class="vb-btn vb-play" data-action="toggle-play">
+              <svg viewBox="0 0 24 24" class="ico-svg ico-play" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24" class="ico-svg ico-pause" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+            </button>
+            <button class="vb-btn vb-speed" data-speed="0.25">0.25×</button>
+            <button class="vb-btn vb-speed" data-speed="0.5">0.5×</button>
+            <button class="vb-btn vb-speed active" data-speed="1">1×</button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-draw" data-action="toggle-draw"><span class="ico">✎</span></button>
+            <button class="vb-btn vb-tool active" data-tool="free"><span class="ico">∿</span></button>
+            <button class="vb-btn vb-tool" data-tool="line"><span class="ico">╱</span></button>
+            <span class="vb-divider"></span>
+            <button class="vb-color active" data-color="#ef4444" style="background:#ef4444"></button>
+            <button class="vb-color" data-color="#facc15" style="background:#facc15"></button>
+            <button class="vb-color" data-color="#3b82f6" style="background:#3b82f6"></button>
+            <button class="vb-color" data-color="#ffffff" style="background:#ffffff"></button>
+            <span class="vb-divider"></span>
+            <button class="vb-btn vb-undo" data-action="undo"><span class="ico">↶</span></button>
+            <button class="vb-btn vb-clear" data-action="clear"><span class="ico">⌫</span></button>
+            <span class="vb-spacer"></span>
+            <button class="vb-btn vb-full" data-action="fullscreen"><span class="ico">⛶</span></button>
+          </div>
+        </div>
+        <div class="vid-caption">
+          <div>
+            <div class="name">Michael Mjaaseth</div>
+            <div class="desc">Lav standard chip som og checker og releaser.</div>
+          </div>
+          <span class="tag">Low traj · Check &amp; release</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer style="margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);text-align:center;">
+    Trener 2 Nærspill · Chipping og pitching
+  </footer>
+</div>
+
+<nav class="section-nav" id="section-nav">
+  <a href="#fundament" data-section="fundament" title="Fundament">Fundament</a>
+  <a href="#grunnslag" data-section="grunnslag" title="Grunnslag">Grunnslag</a>
+  <a href="#standardslag" data-section="standardslag" title="Standardslag">Standardslag</a>
+  <a href="#shotshape" data-section="shotshape" title="Shot shape">Shape</a>
+  <a href="#tourpros" data-section="tourpros" title="Tour pros">Tour</a>
+</nav>
+
+<script>
+(function () {
+  const REVEAL_THRESHOLD = 0.12;
+
+  /* ════════ Reveal on scroll ════════ */
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: REVEAL_THRESHOLD });
+  reveals.forEach((el) => io.observe(el));
+
+  /* ════════ Section nav ════════ */
+  const navLinks = document.querySelectorAll('.section-nav a');
+  const navIO = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        navLinks.forEach((a) => a.classList.toggle('active', a.dataset.section === id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px' });
+  document.querySelectorAll('section.slide').forEach((s) => navIO.observe(s));
+
+  /* ════════ Standardslag explorer ════════ */
+  const standardData = {
+    mid: {
+      title: 'Mid traj, standardslaget',
+      subtitle: 'Ikon-logikk · standardslaget',
+      bullets: ['Ball nøytral, mid traj','Smal <em class="eng">stance</em>, kontroll','Nøytrale hender, mid spinn','Lite rotasjon, kontrollert <em class="eng">release</em>'],
+      summary: ['Mid traj','Mid/høy spinn','Moderat release'],
+      metrics: { launch: { v: 55, l: 'Mid · 55%' }, spin: { v: 70, l: 'Mid/høy · 70%' }, release: { v: 55, l: 'Moderat · 55%' }, bite: { v: 50, l: 'Moderat · 50%' } }
+    },
+    high: {
+      title: 'Høy traj, mykt landingsslag',
+      subtitle: 'Ikon-logikk · soft landing',
+      bullets: ['Ball bak, høy traj','Bred <em class="eng">stance</em>, lav fart i bunnen','Lave hender, mer loft','Lite eller ingen rotasjon, lite release'],
+      summary: ['Høy traj','Mid/lav spinn','Lite release'],
+      metrics: { launch: { v: 90, l: 'Høy · 90%' }, spin: { v: 35, l: 'Mid/lav · 35%' }, release: { v: 20, l: 'Lite · 20%' }, bite: { v: 70, l: 'Mid · 70%' } }
+    },
+    fade: {
+      title: 'Fade, mye spinn',
+      subtitle: 'Shot shape · cut-spinn',
+      bullets: ['Ut-til-inn bane','Lett åpent face','Skaper <em class="eng">cut-spinn</em> og rask stopp'],
+      summary: ['Mye spinn','Cut-spinn','Rask stopp'],
+      metrics: { launch: { v: 55, l: 'Mid · 55%' }, spin: { v: 85, l: 'Høy · 85%' }, release: { v: 20, l: 'Lite · 20%' }, bite: { v: 88, l: 'Høy · 88%' } }
+    },
+    draw: {
+      title: 'Draw, lite spinn',
+      subtitle: 'Shot shape · run-out',
+      bullets: ['Inn-til-ut bane','Face nøytralt eller svakt stengt','For mer rull og lavere spinn'],
+      summary: ['Lite spinn','Mer rull','Lavere launch'],
+      metrics: { launch: { v: 35, l: 'Lav-mid · 35%' }, spin: { v: 20, l: 'Lav · 20%' }, release: { v: 85, l: 'Mye · 85%' }, bite: { v: 22, l: 'Lite · 22%' } }
+    }
+  };
+
+  const spinData = {
+    cut: {
+      title: 'Cut Spinner, Slice',
+      subtitle: 'Setup · svingprinsipp · nøkkelfokus · resultat',
+      video: 'videos/media1.mp4',
+      data: 'img/data-cut-spinner.jpeg',
+      dataCaption: 'Trackman · Cut Spinner',
+      bullets: [
+        '<strong>Setup:</strong> Ball fram i stansen, stå nær ballen, åpent køllehodet',
+        '<strong>Svingprinsipp:</strong> Ut-til-inn svingbane skaper <em class="eng">cut-spinn</em>',
+        '<strong>Friksjon:</strong> "Spin it more than send it"',
+        '<strong>Spin loft:</strong> Dynamisk loft + kontrollert attack-vinkel',
+        '<strong>Nøkkel:</strong> Maksimal friksjon via åpent face og <em class="eng">shear friction</em> fra cut-banen',
+        '<strong>Drill:</strong> Tee-up-øvelsen for å forsterke kontaktpunkt og friksjon',
+        '<strong>Resultat:</strong> Høy <em class="eng">spin RPM</em>, "one hop and stop"',
+        '<strong>Launch:</strong> Lavt til medium med ekstrem <em class="eng">bite</em>'
+      ],
+      metrics: { launch: { v: 35, l: 'Lav-mid · 35%' }, spin: { v: 95, l: 'Ekstrem · 95%' }, release: { v: 10, l: 'Minimal · 10%' }, bite: { v: 95, l: 'Ekstrem · 95%' }, friction: { v: 90, l: 'Maks · 90%' } }
+    },
+    rumford: {
+      title: 'Rumford / Lav slice',
+      subtitle: 'Den mest kontrollerte lavspinneren',
+      video: 'videos/media2.mp4',
+      data: 'img/data-rumford.jpeg',
+      dataCaption: 'Trackman · Rumford / Low slice',
+      bullets: [
+        '<strong>Setup:</strong> Ball midt til lite fram for kontroll på lav <em class="eng">launch</em>',
+        '<strong>Face:</strong> Nøytralt til lett åpent (mindre åpent enn Cut Spinneren)',
+        '<strong>Vekt:</strong> 55–65% fram for ren kontakt',
+        '<strong>Svingprinsipp:</strong> Minimal <em class="eng">wrist set</em>, "Stricker-liknende"',
+        '<strong>Bevegelse:</strong> Kroppsrotasjon driver slaget. Nøytral svingbane gir lav launch og mye friksjon',
+        '<strong>Nøkkelfokus:</strong> "Spin it more than send it", friksjon før kraft',
+        '<strong>Kontakt:</strong> Premiumboll og rene <em class="eng">grooves</em> gir toppspinn',
+        '<strong>Resultat:</strong> Lav bollstart og høy <em class="eng">spin RPM</em>',
+        '<strong>Egnet for:</strong> Harde greener'
+      ],
+      metrics: { launch: { v: 20, l: 'Lav · 20%' }, spin: { v: 85, l: 'Høy · 85%' }, release: { v: 15, l: 'Lite · 15%' }, bite: { v: 80, l: 'Høy · 80%' }, friction: { v: 88, l: 'Topp · 88%' } }
+    },
+    v: {
+      title: 'V-Spinner, medium-traj spinner',
+      subtitle: 'Stabil og repeterbar',
+      video: 'videos/media3.mp4',
+      data: null,
+      dataCaption: '',
+      bullets: [
+        '<strong>Setup:</strong> Ball midt til lite fram',
+        '<strong>Face:</strong> Åpent men ikke ekstremt',
+        '<strong>Stance:</strong> Smalt <em class="eng">stance</em> og svingsenter over ballen for ren kontakt',
+        '<strong>Svingprinsipp:</strong> Nøytral svingbane og åpent face gir "V-formet" spin-loft-relasjon',
+        '<strong>Spin loft:</strong> Høyere dynamisk loft enn Rumford-spinneren',
+        '<strong>Friksjon:</strong> <em class="eng">Shear friction</em> fra lett cut-komponent, mindre enn Cut Spinner',
+        '<strong>Nøkkelfokus:</strong> Medium <em class="eng">launch</em> og høy friksjon',
+        '<strong>Bevegelse:</strong> <em class="eng">Wide &amp; shallow</em> for stabil kontakt',
+        '<strong>Resultat:</strong> Stabil og repeterbar, fungerer i flere lies enn Cut Spinner og Rumford'
+      ],
+      metrics: { launch: { v: 55, l: 'Medium · 55%' }, spin: { v: 80, l: 'Høy · 80%' }, release: { v: 30, l: 'Stabil · 30%' }, bite: { v: 75, l: 'Mid/høy · 75%' }, friction: { v: 75, l: 'Høy · 75%' } }
+    },
+    high: {
+      title: 'High-Traj Cut Spinner, Høy slice spinn',
+      subtitle: 'Tour-liknende, "one hop and stop"',
+      video: 'videos/media4.mp4',
+      data: null,
+      dataCaption: '',
+      bullets: [
+        '<strong>Setup:</strong> Høyere <em class="eng">launch</em> ettertraktes',
+        '<strong>Face:</strong> Åpent face',
+        '<strong>Ball:</strong> Langt fram i stansen',
+        '<strong>Svingprinsipp:</strong> Cut-bane (ut-til-inn) gir <em class="eng">shear friction</em> og høy <em class="eng">spin RPM</em>',
+        '<strong>Krav:</strong> Rene <em class="eng">grooves</em> for maksimal friksjon',
+        '<strong>Tempo:</strong> Samme tempo som fullsving for rytm og stabilitet',
+        '<strong>Nøkkelfokus:</strong> Høy <em class="eng">launch</em> og cut-spinn, "one hop and stop"',
+        '<strong>Resultat:</strong> Tour-liknende høyt slag som stanner ekstremt raskt',
+        '<strong>Bruk:</strong> Når ballen må lande mykt og nær flagget'
+      ],
+      metrics: { launch: { v: 90, l: 'Høy · 90%' }, spin: { v: 92, l: 'Ekstrem · 92%' }, release: { v: 8, l: 'Minimal · 8%' }, bite: { v: 95, l: 'Ekstrem · 95%' }, friction: { v: 85, l: 'Topp · 85%' } }
+    }
+  };
+
+  function setMetrics(pane, metrics) {
+    pane.querySelectorAll('.shot-metric').forEach((m) => {
+      const key = m.dataset.metric;
+      const data = metrics[key];
+      if (!data) { m.style.display = 'none'; return; }
+      m.style.display = '';
+      m.querySelector('.fill').style.width = data.v + '%';
+      m.querySelector('.value').textContent = data.l;
+    });
+  }
+  function setDetails(pane, data, fields) {
+    if (fields.title) pane.querySelector('[data-field="title"]').textContent = data.title;
+    if (fields.subtitle) pane.querySelector('[data-field="subtitle"]').textContent = data.subtitle;
+    if (fields.bullets) {
+      const ul = pane.querySelector('[data-field="bullets"]');
+      ul.innerHTML = data.bullets.map((b) => '<li>' + b + '</li>').join('');
+    }
+    if (fields.summary && data.summary) {
+      const sum = pane.querySelector('[data-field="summary"]');
+      sum.innerHTML = data.summary.map((s) => '<span class="chip">' + s + '</span>').join('');
+    }
+  }
+
+  document.querySelectorAll('.shot-tabs[data-target="standard"] .shot-tab').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.shot-tabs[data-target="standard"] .shot-tab').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const data = standardData[btn.dataset.shot];
+      setDetails(document.querySelector('[data-pane="standard-details"]'), data, { title: 1, subtitle: 1, bullets: 1, summary: 1 });
+      setMetrics(document.querySelector('[data-pane="standard-metrics"]'), data.metrics);
+    });
+  });
+
+  /* ════════ Spin tabs ════════ */
+  const spinFrame = document.querySelector('[data-pane="spin-frame"]');
+  const spinVideoEl = document.querySelector('[data-pane="spin-video"]');
+  const spinNameEl = document.querySelector('[data-pane="spin-name"]');
+  const spinDataImg = document.querySelector('[data-pane="spin-data"]');
+  const spinDataCap = document.querySelector('[data-pane="spin-data-caption"]');
+
+  document.querySelectorAll('.shot-tabs[data-target="spin"] .shot-tab').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.shot-tabs[data-target="spin"] .shot-tab').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const data = spinData[btn.dataset.shot];
+
+      spinVideoEl.style.opacity = '0';
+      // also fade canvas during swap so old drawings don't carry visually
+      const canvasEl = spinFrame ? spinFrame.querySelector('canvas.vid-overlay') : null;
+      if (canvasEl) canvasEl.style.opacity = '0';
+      setTimeout(() => {
+        spinVideoEl.src = data.video;
+        spinVideoEl.load();
+        spinVideoEl.play().catch(() => {});
+        spinVideoEl.style.opacity = '1';
+        if (spinFrame && spinFrame._clearCanvas) spinFrame._clearCanvas();
+        if (canvasEl) canvasEl.style.opacity = '1';
+      }, 220);
+
+      spinNameEl.textContent = data.title;
+      if (data.data) {
+        spinDataImg.classList.remove('hidden');
+        spinDataImg.src = data.data;
+        spinDataCap.textContent = data.dataCaption;
+        spinDataCap.style.display = '';
+      } else {
+        spinDataImg.classList.add('hidden');
+        spinDataCap.style.display = 'none';
+      }
+
+      setDetails(document.querySelector('[data-pane="spin-details"]'), data, { title: 1, subtitle: 1, bullets: 1 });
+      setMetrics(document.querySelector('[data-pane="spin-metrics"]'), data.metrics);
+
+      if (spinFrame) {
+        spinFrame.querySelectorAll('.vb-speed').forEach((b) => b.classList.toggle('active', b.dataset.speed === '1'));
+      }
+      spinVideoEl.playbackRate = 1;
+    });
+  });
+
+  /* ════════ Per-video frame: drawing + speed + play/pause + pseudo-fullscreen ════════ */
+  function setupVidFrame(frame) {
+    const video = frame.querySelector('video');
+    const canvas = frame.querySelector('canvas.vid-overlay');
+    const stage = frame.querySelector('.vid-stage');
+    if (!video || !canvas || !stage) return;
+    const ctx = canvas.getContext('2d');
+
+    let drawMode = false;
+    let tool = 'free';
+    let color = '#ef4444';
+    const lineWidth = 4;
+    let drawing = false;
+    let startX = 0, startY = 0, lastX = 0, lastY = 0;
+    let snapshot = null;
+    const history = [];
+    let cssW = 0, cssH = 0;
+
+    function fitCanvas() {
+      const r = stage.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) return;
+      cssW = r.width;
+      cssH = r.height;
+      const dpr = window.devicePixelRatio || 1;
+      let prev = null;
+      try { prev = canvas.toDataURL(); } catch (e) {}
+      canvas.width = Math.round(r.width * dpr);
+      canvas.height = Math.round(r.height * dpr);
+      canvas.style.width = r.width + 'px';
+      canvas.style.height = r.height + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      if (prev) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, r.width, r.height);
+        img.src = prev;
+      }
+    }
+    fitCanvas();
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(fitCanvas);
+      ro.observe(stage);
+    } else {
+      window.addEventListener('resize', fitCanvas);
+    }
+
+    function pos(e) {
+      const r = canvas.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return [t.clientX - r.left, t.clientY - r.top];
+    }
+    function pushHistory() {
+      try { history.push(canvas.toDataURL()); if (history.length > 16) history.shift(); } catch (e) {}
+    }
+    function clearAll() {
+      ctx.clearRect(0, 0, cssW, cssH);
+    }
+
+    function start(e) {
+      if (!drawMode) return;
+      e.preventDefault();
+      drawing = true;
+      [startX, startY] = pos(e);
+      [lastX, lastY] = [startX, startY];
+      pushHistory();
+      if (tool === 'line') {
+        try { snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height); } catch (e) { snapshot = null; }
+      }
+    }
+    function move(e) {
+      if (!drawing || !drawMode) return;
+      e.preventDefault();
+      const [x, y] = pos(e);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      if (tool === 'free') {
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        [lastX, lastY] = [x, y];
+      } else if (tool === 'line') {
+        if (snapshot) {
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.putImageData(snapshot, 0, 0);
+          ctx.restore();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = lineWidth;
+        }
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+    }
+    function end() { drawing = false; }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+    canvas.addEventListener('touchstart', start, { passive: false });
+    canvas.addEventListener('touchmove', move, { passive: false });
+    canvas.addEventListener('touchend', end);
+
+    /* Speed */
+    frame.querySelectorAll('.vb-speed').forEach((b) => {
+      b.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        frame.querySelectorAll('.vb-speed').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        video.playbackRate = parseFloat(b.dataset.speed);
+      });
+    });
+    /* Tools */
+    frame.querySelectorAll('.vb-tool').forEach((b) => {
+      b.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        frame.querySelectorAll('.vb-tool').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        tool = b.dataset.tool;
+      });
+    });
+    /* Colors */
+    frame.querySelectorAll('.vb-color').forEach((b) => {
+      b.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        frame.querySelectorAll('.vb-color').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        color = b.dataset.color;
+      });
+    });
+
+    /* Progress / seek bar (injected at top of toolbar) */
+    const bar = frame.querySelector('.vid-bar');
+    if (bar) {
+      const progress = document.createElement('div');
+      progress.className = 'vb-progress';
+      const fill = document.createElement('div');
+      fill.className = 'vb-progress-fill';
+      const thumb = document.createElement('div');
+      thumb.className = 'vb-progress-thumb';
+      progress.appendChild(fill);
+      progress.appendChild(thumb);
+      bar.insertBefore(progress, bar.firstChild);
+
+      let scrubbing = false;
+      function updateUI() {
+        if (!video.duration || isNaN(video.duration)) return;
+        const pct = (video.currentTime / video.duration) * 100;
+        fill.style.width = pct + '%';
+        thumb.style.left = pct + '%';
+      }
+      function seekFromPointer(ev) {
+        const r = progress.getBoundingClientRect();
+        const t = ev.touches ? ev.touches[0] : ev;
+        const ratio = Math.max(0, Math.min(1, (t.clientX - r.left) / r.width));
+        if (video.duration) video.currentTime = ratio * video.duration;
+        const pct = ratio * 100;
+        fill.style.width = pct + '%';
+        thumb.style.left = pct + '%';
+      }
+      video.addEventListener('timeupdate', updateUI);
+      video.addEventListener('loadedmetadata', updateUI);
+
+      progress.addEventListener('mousedown', (ev) => {
+        ev.stopPropagation();
+        scrubbing = true;
+        progress.classList.add('scrubbing');
+        seekFromPointer(ev);
+      });
+      window.addEventListener('mousemove', (ev) => { if (scrubbing) seekFromPointer(ev); });
+      window.addEventListener('mouseup', () => {
+        if (scrubbing) { scrubbing = false; progress.classList.remove('scrubbing'); }
+      });
+      progress.addEventListener('touchstart', (ev) => {
+        ev.stopPropagation();
+        scrubbing = true;
+        progress.classList.add('scrubbing');
+        seekFromPointer(ev);
+      }, { passive: true });
+      progress.addEventListener('touchmove', (ev) => { if (scrubbing) seekFromPointer(ev); }, { passive: true });
+      progress.addEventListener('touchend', () => {
+        scrubbing = false;
+        progress.classList.remove('scrubbing');
+      });
+    }
+
+    /* Play / Pause */
+    const playBtn = frame.querySelector('.vb-play');
+    const playIco = playBtn ? playBtn.querySelector('.ico-play') : null;
+    const pauseIco = playBtn ? playBtn.querySelector('.ico-pause') : null;
+    function syncPlayState() {
+      if (!playIco || !pauseIco) return;
+      const paused = video.paused;
+      playIco.style.display = paused ? '' : 'none';
+      pauseIco.style.display = paused ? 'none' : '';
+    }
+    if (playBtn) {
+      playBtn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        if (video.paused) video.play().catch(() => {});
+        else video.pause();
+      });
+    }
+    video.addEventListener('play', syncPlayState);
+    video.addEventListener('pause', syncPlayState);
+    syncPlayState();
+
+    /* Draw toggle */
+    const drawBtn = frame.querySelector('.vb-draw');
+    if (drawBtn) {
+      drawBtn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        drawMode = !drawMode;
+        frame.classList.toggle('drawing', drawMode);
+        drawBtn.classList.toggle('active', drawMode);
+        if (drawMode) video.pause();
+        else video.play().catch(() => {});
+      });
+    }
+    /* Undo */
+    const undoBtn = frame.querySelector('.vb-undo');
+    if (undoBtn) {
+      undoBtn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        if (!history.length) return;
+        const last = history.pop();
+        const img = new Image();
+        img.onload = () => { ctx.clearRect(0, 0, cssW, cssH); ctx.drawImage(img, 0, 0, cssW, cssH); };
+        img.src = last;
+      });
+    }
+    /* Clear */
+    const clearBtn = frame.querySelector('.vb-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        pushHistory();
+        clearAll();
+      });
+    }
+
+    /* Pseudo-fullscreen — keeps drawing tools available */
+    const fullBtn = frame.querySelector('.vb-full');
+    function toggleFullscreen(force) {
+      const willEnter = force === true || (force !== false && !frame.classList.contains('fullscreen'));
+      if (willEnter) {
+        frame.classList.add('fullscreen');
+        document.body.style.overflow = 'hidden';
+      } else {
+        frame.classList.remove('fullscreen');
+        document.body.style.overflow = '';
+      }
+      // refit canvas after layout settles
+      requestAnimationFrame(() => requestAnimationFrame(fitCanvas));
+    }
+    if (fullBtn) fullBtn.addEventListener('click', (ev) => { ev.stopPropagation(); toggleFullscreen(); });
+
+    /* Click on video → fullscreen (when not drawing) */
+    video.addEventListener('click', () => {
+      if (drawMode) return;
+      toggleFullscreen();
+    });
+
+    /* ESC exits fullscreen */
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape' && frame.classList.contains('fullscreen')) {
+        toggleFullscreen(false);
+      }
+    });
+
+    /* Touch: tap reveals toolbar briefly */
+    let touchTimer = null;
+    stage.addEventListener('touchstart', () => {
+      frame.classList.add('touch-active');
+      clearTimeout(touchTimer);
+      touchTimer = setTimeout(() => frame.classList.remove('touch-active'), 2400);
+    }, { passive: true });
+
+    frame._clearCanvas = clearAll;
+    frame._refit = fitCanvas;
+  }
+
+  document.querySelectorAll('[data-vid-frame]').forEach(setupVidFrame);
+})();
+</script>
+
+</body>
+</html>

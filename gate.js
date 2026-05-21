@@ -1,0 +1,1 @@
+// Passord-gate midlertidig deaktivert.
